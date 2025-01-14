@@ -52,16 +52,23 @@ void readData(FILE* fitbit_input) {
 	printf("Welcome user %s!\n\n", target);
 	welcomeStatement(); //print welcome statement
 
+	storeData(fitbit_input, target); //clean through data before storing it
 
-	free(target); //free heap memory of target
+	//
+	//
+
+	//free(target); //free heap memory of target
 	//iterate through each line, only read if valid target user
 	//check for repeated minutes
 }
 
-
+//name: targetPatient
+//desc: determines the user id to greet user and to clean through data later
+//parameters: input file
+//output: character array of the user's id
 
 char* targetPatient(FILE* fitbit_input) {
-	
+
 	char first_line[100]; //stores first line of input
 	char* target = malloc(6 * sizeof(char));
 
@@ -69,7 +76,33 @@ char* targetPatient(FILE* fitbit_input) {
 	strtok(first_line, ","); //separates out first word (i.e target)
 	char* second_token = strtok(NULL, ","); //stores token to target
 
-	strcpy(target, second_token); 
-	
+	strcpy(target, second_token);
+
 	return target; //returns user id target to rest of function
+}
+
+//name: storeData
+//desc: cleans through data to find duplicates and invalid user input, stores in struct fitbit
+//parameters: input file
+//output: data for each minute stored into structs
+
+
+void storeData(FILE* input, char* target) {
+
+	FitbitData fitbitdata[1048]; // a fitbit data struct to store the information of each minute
+	int i = 0; //array for each min
+	char buffer[100]; //character array to store the contents of each line
+	fgets(buffer, 100, input); //fgets ends when it reaches a newline, so call twice to skip first two lines
+	fgets(buffer, 100, input);
+
+	do {
+		fgets(buffer, 100, input);
+		if (strtok(buffer, ",") = *target); //if the first line is the correct user
+		//also check minute is one greater than last minute
+		fitbitdata->patient = (strok(buffer, ","));
+		
+
+
+	} while (buffer != '\0');
+	//now we're at the line we need to start storing our info!
 }
