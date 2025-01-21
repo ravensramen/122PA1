@@ -1,108 +1,50 @@
-//file: functions.c
-//function: stores all the definitions of user defined functions
-
-//name:
-//desc: 
-//parameters: 
-//output: 
-
-#include "header.h" //include libraries + preprocessor directives in header
-
-//name:checkSuccess
-//desc: determines if input data file was inputted properly
-//parameters: pointer to input data file
-//output: boolean value, false if file not opened, true if opened
-
-bool checkSuccess(FILE* input) {
-	if (input == NULL) {
-		printf("Your data is not entered properly, please try again");
-		return false;
-	}
-	//if file not opened properly return false
-	else return true;
-}
-
-//name:welcomeStatement
-//desc: prints welcome statement to console
-//parameters: n/a, only runs if file was successfully opened.
-//output: n/a
-
-void welcomeStatement(void) {
-	printf("Thank you for inputting your FitBit data today.\n");
-	printf("Your data will now be analyzed for total calories, total distance");
-	printf(" total floors,\ntotal steps, average heartrate, maximum steps per minute, and sleep quality.\n\n");
-	return;
-}
-//name:exitStatement
-//desc: prints final statement to console
-//parameters: n/a
-//output: n/a
-
-void exitStatement(void) {
-	printf("Thank you for using FitBit today, see you tomorrow!");
-}
-
-//name:readData
-//desc: prints welcome statement to console
-//parameters: pointer to input data
-//output: n/a
-//read data and store it into structs
-void readData(FILE* fitbit_input) {
-	char* target = targetPatient(fitbit_input);//detect user target patient, used to parce data later
-	printf("Welcome user %s!\n\n", target);
-	welcomeStatement(); //print welcome statement
-
-	storeData(fitbit_input, target); //clean through data before storing it
-
-	//
-	//
-
-	//free(target); //free heap memory of target
-	//iterate through each line, only read if valid target user
-	//check for repeated minutes
-}
-
-//name: targetPatient
-//desc: determines the user id to greet user and to clean through data later
-//parameters: input file
-//output: character array of the user's id
-
-char* targetPatient(FILE* fitbit_input) {
-
-	char first_line[100]; //stores first line of input
-	char* target = malloc(6 * sizeof(char));
-
-	fgets(first_line, sizeof(first_line), fitbit_input); //stores first line of fitbit input into first_line
-	strtok(first_line, ","); //separates out first word (i.e target)
-	char* second_token = strtok(NULL, ","); //stores token to target
-
-	strcpy(target, second_token);
-
-	return target; //returns user id target to rest of function
-}
-
-//name: storeData
-//desc: cleans through data to find duplicates and invalid user input, stores in struct fitbit
-//parameters: input file
-//output: data for each minute stored into structs
+//Name: Sydnee Boothby
+//Course: CptS122
+//Professor + TA: Andy O'Fallon, Kyle Parker
+//Assignment: PA1
+// Description: Read csv input of a day's worth of fitbit data. Dedupe and clean through data, record analysis of results to an output csv file.
+//Date: 01/12
 
 
-void storeData(FILE* input, char* target) {
+//preprocessor directives
+#define _CRT_SECURE_NO_WARNINGS
+#define MISSING_VALUE -1;
 
-	FitbitData fitbitdata[1048]; // a fitbit data struct to store the information of each minute
-	int i = 0; //array for each min
-	char buffer[100]; //character array to store the contents of each line
-	fgets(buffer, 100, input); //fgets ends when it reaches a newline, so call twice to skip first two lines
-	fgets(buffer, 100, input);
+//import libraries for functions
+#include <stdio.h> //printf, scanf, file functions...
+#include <string.h> //string mod functions, strtok, strlen...
+#include <stdbool.h> //for boolean functions
+#include<stdlib.h>
 
-	do {
-		fgets(buffer, 100, input);
-		if (strtok(buffer, ",") = *target); //if the first line is the correct user
-		//also check minute is one greater than last minute
-		fitbitdata->patient = (strok(buffer, ","));
-		
+//structs definition
+
+typedef enum sleep
+{
+	NONE = 0, ASLEEP = 1, AWAKE = 2, REALLYAWAKE = 3
+} Sleep;
+
+ 
+typedef struct fitbit {
+	char patient[10];
+	char minute[9];
+	double calories;
+	double distance;
+	unsigned int floors;
+	unsigned int heartRate;
+	unsigned int steps;
+	Sleep sleepLevel;
+
+} FitbitData;
 
 
-	} while (buffer != '\0');
-	//now we're at the line we need to start storing our info!
-}
+//function declarations, descriptions in functions.c
+bool checkSuccess(FILE* input);
+void welcomeStatement(void);
+void exitStatement(void);
+void readData(FILE* fitbit_input); 
+char* targetPatient(FILE* fitbit_input);
+void storeData(FILE* input, FitbitData* fitbitdata, int* i);
+char* my_strtok(char* buffer, char delim); 
+int minuteToIndex(char* minute);
+void computeAverages(FitbitData* fitbitdata, int size, FILE* output);
+void poorSleep(FitbitData* fitbitdata, int size, int* start_index, int* end_index);
